@@ -1,4 +1,4 @@
-// Versao 2.2 - Atualizacao de Telefone
+// Versao 2.2 - Atualizacao de  Telefone
 const API_URL = "https://simmmmm-1.onrender.com/api";
 let statusChart, monthlyChart, currentLoanId, currentBookId;
 let allBooks = [];
