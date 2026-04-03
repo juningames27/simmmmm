@@ -39,9 +39,31 @@ main { padding: 2rem 5%; }
 .card { background: var(--card-bg); padding: 25px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
 .card p { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }
 
-.charts-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-.chart-box { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+/* Ajuste para os Gráficos não cortarem */
+.charts-container { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 20px; 
+}
 
+@media (min-width: 992px) {
+    .charts-container { grid-template-columns: 1fr 2fr; }
+}
+
+.chart-box { 
+    background: var(--card-bg); 
+    padding: 20px; 
+    border-radius: 12px; 
+    border: 1px solid var(--border); 
+    height: 320px; /* Isso impede que o gráfico 'estoure' a tela */
+    position: relative;
+    width: 100%;
+}
+
+canvas { 
+    width: 100% !important; 
+    height: 100% !important; 
+}
 .form-container { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
 /* Isso garante que inputs e selects tenham a mesma cor e estilo */
