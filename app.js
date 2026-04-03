@@ -188,7 +188,7 @@ function toggleTheme() {
     const isDark = document.body.classList.contains('dark-theme');
     document.body.classList.toggle('light-theme', isDark);
     document.body.classList.toggle('dark-theme', !isDark);
-    document.getElementById('theme-toggle').textContent = isDark ? 'escuro' : 'claro';
+    document.getElementById('theme-toggle').textContent = isDark ? '⚫' : '⚪';
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
     loadDashboard();
 }
@@ -196,10 +196,10 @@ function toggleTheme() {
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme')) {
         document.body.className = 'dark-theme';
-        document.getElementById('theme-toggle').textContent = 'claro';
+        document.getElementById('theme-toggle').textContent = '⚪';
     } else {
         document.body.className = 'light-theme';
-        document.getElementById('theme-toggle').textContent = 'escuro';
+        document.getElementById('theme-toggle').textContent = '⚫';
     }
     document.getElementById('loan-date').valueAsDate = new Date();
     loadDashboard();
