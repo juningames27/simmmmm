@@ -119,12 +119,20 @@
                 <span class="close-btn" onclick="closeEditLoanModal()">&times;</span>
                 <h3>Editar Dados do Aluno</h3>
                 <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 10px;">
+                    <label>Nome do Aluno:</label>
                     <input type="text" id="edit-loan-student" placeholder="Nome do Aluno">
+                    
+                    <label>Telefone:</label>
+                    <input type="tel" id="edit-loan-phone" placeholder="Telefone/WhatsApp">
+                    
+                    <label>Escola:</label>
                     <select id="edit-loan-school">
                         <option value="E.M Cléber Sampaio">E.M Cléber Sampaio</option>
                         <option value="E.M Moacyr Bacelar Nunes">E.M Moacyr Bacelar Nunes</option>
                         <option value="E.M José Barreto De Araújo">E.M José Barreto De Araújo</option>
                     </select>
+                    
+                    <label>Série:</label>
                     <select id="edit-loan-grade">
                         <option value="1° Ano">1° Ano</option>
                         <option value="2° Ano">2° Ano</option>
@@ -141,6 +149,6 @@
             </div>
         </div>
 
-        <script src="app.js?v=1.3"></script>
+        <script src="app.js?v=1.4"></script>
     </body>
 </html>

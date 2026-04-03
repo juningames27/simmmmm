@@ -130,13 +130,14 @@ async function loadLoans() {
     });
 }
 
-function openEditLoanModal(id, student, school, grade) {
+function openEditLoanModal(id, student, school, grade, phone) { // Adicione phone aqui
     currentLoanId = id;
     document.getElementById("edit-loan-student").value = student;
     document.getElementById("edit-loan-school").value = school;
     document.getElementById("edit-loan-grade").value = grade;
+    document.getElementById("edit-loan-phone").value = phone || ""; // Adicione esta linha
     document.getElementById("modal-edit-loan").style.display = "block";
-    closeModal(); // Fecha o modal de detalhes caso esteja aberto
+    closeModal();
 }
 
 function closeEditLoanModal() { 
@@ -147,21 +148,19 @@ async function updateLoan() {
     const studentName = document.getElementById("edit-loan-student").value;
     const school = document.getElementById("edit-loan-school").value;
     const grade = document.getElementById("edit-loan-grade").value;
+    const phone = document.getElementById("edit-loan-phone").value; // Adicione esta linha
 
     const res = await fetch(`${API_URL}/loans/${currentLoanId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentName, school, grade })
+        body: JSON.stringify({ studentName, school, grade, phone }) // Adicione phone aqui
     });
 
     if (res.ok) { 
         closeEditLoanModal(); 
         loadLoans(); 
-    } else {
-        alert("Erro ao atualizar dados do aluno.");
     }
 }
-
 document.getElementById("form-loan").onsubmit = async (e) => {
     e.preventDefault();
     const searchValue = document.getElementById("loan-book-search").value;

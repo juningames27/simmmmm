@@ -44,7 +44,6 @@ app.post("/api/books", (req, res) => {
     res.json(newBook);
 });
 
-// NOVA ROTA: EDITAR LIVRO
 app.put("/api/books/:id", (req, res) => {
     const db = readDB();
     const bookIndex = db.books.findIndex((b) => String(b.id) === String(req.params.id));
@@ -111,6 +110,25 @@ app.post("/api/loans", (req, res) => {
     }
 });
 
+// ATUALIZAR DADOS DO ALUNO (INCLUINDO TELEFONE)
+app.put("/api/loans/:id", (req, res) => {
+    const db = readDB();
+    const idx = db.loans.findIndex(l => String(l.id) === String(req.params.id));
+    
+    if (idx !== -1) {
+        // Atualiza apenas os campos enviados no corpo da requisição
+        if (req.body.studentName !== undefined) db.loans[idx].studentName = req.body.studentName;
+        if (req.body.phone !== undefined) db.loans[idx].phone = req.body.phone;
+        if (req.body.school !== undefined) db.loans[idx].school = req.body.school;
+        if (req.body.grade !== undefined) db.loans[idx].grade = req.body.grade;
+        
+        writeDB(db);
+        res.json(db.loans[idx]);
+    } else {
+        res.status(404).json({ error: "Empréstimo não encontrado" });
+    }
+});
+
 app.delete("/api/loans/:id", (req, res) => {
     const db = readDB();
     const loanIndex = db.loans.findIndex((l) => l.id === req.params.id);
@@ -141,20 +159,6 @@ app.get("/api/dashboard", (req, res) => {
     });
     res.json({ totalBooks, rentedBooks, availableBooks: totalBooks - rentedBooks, lateLoans, monthlyData });
 });
-app.put("/api/loans/:id", (req, res) => {
-    const db = readDB();
-    const idx = db.loans.findIndex(l => String(l.id) === String(req.params.id));
-    
-    if (idx !== -1) {
-        db.loans[idx].studentName = req.body.studentName || db.loans[idx].studentName;
-        db.loans[idx].school = req.body.school || db.loans[idx].school;
-        db.loans[idx].grade = req.body.grade || db.loans[idx].grade;
-        
-        writeDB(db);
-        res.json(db.loans[idx]);
-    } else {
-        res.status(404).send("Empréstimo não encontrado");
-    }
-});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
