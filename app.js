@@ -1,4 +1,4 @@
-const API_URL = 'https://simmmmm-1.onrender.com';
+const API_URL = 'https://simmmmm-1.onrender.com/api';
 let statusChart, monthlyChart, currentLoanId;
 
 async function navigate(viewId) {
