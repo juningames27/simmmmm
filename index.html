@@ -25,7 +25,7 @@
     <main>
         <section id="view-dashboard" class="view active">
             <div class="dashboard-cards">
-                <div class="card"><h3>  Acervo</h3><p id="dash-total-books">0</p></div>
+                <div class="card"><h3>Acervo</h3><p id="dash-total-books">0</p></div>
                 <div class="card"><h3>Alugados</h3><p id="dash-rented-books" class="text-warning">0</p></div>
                 <div class="card"><h3>Atrasados</h3><p id="dash-late-loans" class="text-danger">0</p></div>
             </div>
@@ -44,6 +44,11 @@
                     <button type="submit">Cadastrar</button>
                 </form>
             </div>
+
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="search-book-input" placeholder="🔍 Pesquisar livro pelo nome ou autor..." style="width: 100%; max-width: 400px; padding: 10px; border-radius: 8px;">
+            </div>
+
             <table>
                 <thead><tr><th>ID</th><th>Título</th><th>Autor</th><th>Status</th><th>Ação</th></tr></thead>
                 <tbody id="table-books-body"></tbody>
@@ -77,7 +82,7 @@
                 </form>
             </div>
             <table>
-                <thead><tr><th>Aluno</th><th>Telefone</th><th>Livro</th><th>Entrega</th><th>Ação</th></tr></thead>
+                <thead><tr><th>Aluno</th><th>Escola</th><th>Série</th><th>Livro</th><th>Entrega</th><th>Ação</th></tr></thead>
                 <tbody id="table-loans-body"></tbody>
             </table>
         </section>

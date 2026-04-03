@@ -1,5 +1,6 @@
 const API_URL = 'https://simmmmm-1.onrender.com/api';
 let statusChart, monthlyChart, currentLoanId;
+let allBooks = []; // Variável global para armazenar todos os livros para pesquisa
 
 async function navigate(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -27,7 +28,7 @@ async function loadDashboard() {
             type: 'doughnut',
             data: {
                 labels: ['Livres', 'Alugados'],
-                datasets: [{ data: [data.availableBooks, data.rentedBooks], backgroundColor: ['#198754', '#ffc107'] }]
+                datasets: [{ data: [data.availableBooks, data.rentedBooks], backgroundColor: ['#007bff', '#dc3545'] }]
             },
             options: { plugins: { legend: { labels: { color: color } } } }
         });
@@ -50,15 +51,21 @@ async function loadDashboard() {
     } catch (e) { console.error(e); }
 }
 
+// Carrega os livros do servidor e salva na variável global
 async function loadBooks() {
     const res = await fetch(`${API_URL}/books`);
-    const books = await res.json();
+    allBooks = await res.json();
+    renderBooks(allBooks);
+}
+
+// Função para desenhar a tabela de livros (usada também na pesquisa)
+function renderBooks(booksList) {
     const tbody = document.getElementById('table-books-body');
     tbody.innerHTML = '';
     const datalist = document.getElementById('books-datalist');
     datalist.innerHTML = '';
 
-    books.forEach(b => {
+    booksList.forEach(b => {
         tbody.innerHTML += `
             <tr>
                 <td>${b.id}</td>
@@ -67,9 +74,23 @@ async function loadBooks() {
                 <td class="status-${b.status}">${b.status}</td> 
                 <td><button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button></td>
             </tr>`;
-        if (b.status === 'Disponível') datalist.innerHTML += `<option value="${b.title} | ID: ${b.id}">`;
+        
+        // Datalist para empréstimos (apenas disponíveis)
+        if (b.status === 'Disponível') {
+            datalist.innerHTML += `<option value="${b.title} | ID: ${b.id}">`;
+        }
     });
 }
+
+// Lógica da Barra de Pesquisa
+document.getElementById('search-book-input').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allBooks.filter(b => 
+        b.title.toLowerCase().includes(term) || 
+        b.author.toLowerCase().includes(term)
+    );
+    renderBooks(filtered);
+});
 
 async function deleteBook(id) {
     if(confirm("Deseja remover este livro do acervo?")) {
@@ -85,7 +106,6 @@ document.getElementById('form-book').onsubmit = async (e) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            id: document.getElementById('book-id').value,
             title: document.getElementById('book-title').value,
             author: document.getElementById('book-author').value
         })
@@ -153,7 +173,7 @@ function openModal(id, student, book, date) {
 function closeModal() { document.getElementById('modal-loan').style.display = 'none'; }
 
 document.getElementById('btn-confirm-return').onclick = async () => {
-    await fetch(`${API_URL}/loans/${currentLoanId}/return`, { method: 'POST' });
+    await fetch(`${API_URL}/loans/${currentLoanId}`, { method: 'DELETE' }); // No seu server.js o delete já libera o livro
     closeModal(); loadLoans(); loadDashboard();
 };
 
@@ -174,9 +194,12 @@ function toggleTheme() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('theme') === 'dark') {
+    if (localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme')) {
         document.body.className = 'dark-theme';
         document.getElementById('theme-toggle').textContent = '☀️';
+    } else {
+        document.body.className = 'light-theme';
+        document.getElementById('theme-toggle').textContent = '🌑';
     }
     document.getElementById('loan-date').valueAsDate = new Date();
     loadDashboard();
