@@ -25,13 +25,24 @@
     <main>
         <section id="view-dashboard" class="view active">
             <div class="dashboard-cards">
-                <div class="card"><h3>  Acervo</h3><p id="dash-total-books">0</p></div>
+                <div class="card"><h3>Acervo</h3><p id="dash-total-books">0</p></div>
                 <div class="card"><h3>Alugados</h3><p id="dash-rented-books" class="text-warning">0</p></div>
                 <div class="card"><h3>Atrasados</h3><p id="dash-late-loans" class="text-danger">0</p></div>
             </div>
+            
             <div class="charts-container">
-                <div class="chart-box"><h3>Status</h3><canvas id="chartStatus"></canvas></div>
-                <div class="chart-box"><h3>Anual</h3><canvas id="chartMonthly"></canvas></div>
+                <div class="chart-box">
+                    <h3>Status</h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="chartStatus"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3>Anual</h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="chartMonthly"></canvas>
+                    </div>
+                </div>
             </div>
         </section>
 
