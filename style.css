@@ -16,9 +16,21 @@ header {
     background: var(--card-bg); padding: 1rem 5%; display: flex; 
     justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+.logo { 
+    font-size: 1.6rem; 
+    font-weight: bold; 
+    color: var(--primary); 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; /* Espaço entre a imagem e o texto */
+}
 
-.logo { font-size: 1.6rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-.logo-img { height: 40px; width: auto; }
+.logo-img { 
+    height: 45px; /* Altura ideal para o cabeçalho */
+    width: auto;  /* Mantém a proporção da imagem */
+    object-fit: contain;
+    display: block;
+}
 
 nav { display: flex; gap: 20px; align-items: center; }
 .nav-btn { background: none; border: none; cursor: pointer; font-weight: bold; color: var(--text-sec); font-size: 1rem; }
