@@ -1,4 +1,3 @@
-
 :root {
 --bg-color: #f0f2f5; --card-bg: #ffffff; --text-main: #1c1e21;
 --text-sec: #606770; --border: #dddfe2; --primary: #007bff;
@@ -53,15 +52,14 @@ table { width: 100%; border-collapse: collapse; margin-top: 20px; background: va
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
 th { background: rgba(0,0,0,0.05); color: var(--text-sec); }
 
-/* STATUS COM CORES NOVAS */
-.status-Disponível { color: #007bff !important; font-weight: bold; } /* Azul */
-.status-Alugado { color: #dc3545 !important; font-weight: bold; }/* Vermelho */
+.status-Disponível { color: #007bff !important; font-weight: bold; }
+.status-Alugado { color: #dc3545 !important; font-weight: bold; }
 
-.btn-delete-row { background: none; border: none; cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; }
-.btn-delete-row:hover { filter: grayscale(0); transform: scale(1.2); }
+.btn-delete-row, .btn-edit-row { background: none; border: none; cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; margin-right: 5px; }
+.btn-delete-row:hover, .btn-edit-row:hover { filter: grayscale(0); transform: scale(1.2); }
 
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-.modal-content { background: var(--card-bg); width: 400px; margin: 100px auto; padding: 30px; border-radius: 15px; position: relative; }
+.modal-content { background: var(--card-bg); width: 450px; margin: 100px auto; padding: 30px; border-radius: 15px; position: relative; }
 .close-btn { position: absolute; right: 20px; top: 10px; cursor: pointer; font-size: 28px; }
 
 .btn-danger-outline { margin-top: 10px; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; border: 1px solid var(--danger); background: none; color: var(--danger); font-weight: bold; transition: 0.3s; }
