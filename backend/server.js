@@ -16,7 +16,7 @@ if (!fs.existsSync(DB_FILE)) {
 const readDB = () => JSON.parse(fs.readFileSync(DB_FILE));
 const writeDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-app.get("/", (req, res) => res.send("Servidor Biblioteca NTE Online!"));
+app.get("/", (req, res) => res.send("Servidor Biblioteca NTE Ativo!"));
 
 // --- LIVROS ---
 app.get("/api/books", (req, res) => res.json(readDB().books));
@@ -26,12 +26,12 @@ app.post("/api/books", (req, res) => {
     const newId = (db.nextBookId || 1).toString();
     const newBook = { id: newId, title: req.body.title, author: req.body.author, status: "Disponível" };
     db.books.push(newBook);
-    db.nextBookId = (db.nextBookId || 1) + 1;
+    db.nextBookId = parseInt(newId) + 1;
     writeDB(db);
     res.json(newBook);
 });
 
-// EDITAR LIVRO
+// Rota para EDITAR Livro
 app.put("/api/books/:id", (req, res) => {
     const db = readDB();
     const book = db.books.find(b => String(b.id) === String(req.params.id));
@@ -40,19 +40,17 @@ app.put("/api/books/:id", (req, res) => {
         book.author = req.body.author || book.author;
         writeDB(db);
         res.json(book);
-    } else {
-        res.status(404).json({ error: "Livro não encontrado" });
-    }
+    } else res.status(404).json({ error: "Livro não encontrado" });
 });
 
 app.delete("/api/books/:id", (req, res) => {
     const db = readDB();
     const idx = db.books.findIndex(b => String(b.id) === String(req.params.id));
     if (idx !== -1) {
-        if (db.books[idx].status === "Alugado") return res.status(400).json({ error: "Livro alugado!" });
+        if (db.books[idx].status === "Alugado") return res.status(400).json({ error: "Livro alugado não pode ser removido!" });
         db.books.splice(idx, 1);
         writeDB(db);
-        res.json({ message: "Removido" });
+        res.json({ message: "Removido!" });
     } else res.status(404).json({ error: "Não encontrado" });
 });
 
@@ -65,8 +63,7 @@ app.post("/api/loans", (req, res) => {
     if (book && book.status === "Disponível") {
         const dateObj = new Date(req.body.rentalDate);
         dateObj.setDate(dateObj.getDate() + 7);
-        const formattedReturnDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-        
+        const formattedReturnDate = `${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}/${dateObj.getFullYear()}`;
         const newLoan = {
             id: Date.now().toString(),
             studentName: req.body.studentName,
@@ -83,10 +80,10 @@ app.post("/api/loans", (req, res) => {
         db.loans.push(newLoan);
         writeDB(db);
         res.json(newLoan);
-    } else res.status(400).json({ error: "Livro indisponível" });
+    } else res.status(400).json({ error: "Livro indisponível ou inexistente." });
 });
 
-// EDITAR EMPRÉSTIMO (DADOS DO ALUNO)
+// Rota para EDITAR Empréstimo (Dados do Aluno)
 app.put("/api/loans/:id", (req, res) => {
     const db = readDB();
     const loan = db.loans.find(l => l.id === req.params.id);
@@ -97,7 +94,7 @@ app.put("/api/loans/:id", (req, res) => {
         loan.grade = req.body.grade || loan.grade;
         writeDB(db);
         res.json(loan);
-    } else res.status(404).json({ error: "Empréstimo não encontrado" });
+    } else res.status(404).json({ error: "Registro não encontrado" });
 });
 
 app.delete("/api/loans/:id", (req, res) => {
@@ -108,7 +105,7 @@ app.delete("/api/loans/:id", (req, res) => {
         if (book) book.status = "Disponível";
         db.loans.splice(idx, 1);
         writeDB(db);
-        res.json({ message: "OK" });
+        res.json({ message: "Devolução registrada!" });
     } else res.status(404).json({ error: "Não encontrado" });
 });
 
@@ -117,7 +114,6 @@ app.get("/api/dashboard", (req, res) => {
     const rented = db.books.filter(b => b.status === "Alugado").length;
     const today = new Date().setHours(0,0,0,0);
     const late = db.loans.filter(l => {
-        if (l.status !== "Ativo") return false;
         const p = l.returnDate.split("/");
         return new Date(p[2], p[1]-1, p[0]).getTime() < today;
     }).length;
@@ -127,4 +123,4 @@ app.get("/api/dashboard", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor na porta ${PORT}`));

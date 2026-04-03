@@ -55,7 +55,7 @@ th { background: rgba(0,0,0,0.05); color: var(--text-sec); }
 .status-Disponível { color: #007bff !important; font-weight: bold; }
 .status-Alugado { color: #dc3545 !important; font-weight: bold; }
 
-.btn-delete-row, .btn-edit-row { background: none; border: none; cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; margin-right: 5px; }
+.btn-delete-row, .btn-edit-row { background: none; border: none; cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; margin-right: 8px; }
 .btn-delete-row:hover, .btn-edit-row:hover { filter: grayscale(0); transform: scale(1.2); }
 
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }

@@ -126,9 +126,9 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closeEditBookModal()">&times;</span>
                 <h3>Editar Livro</h3>
-                <div class="input-group" style="flex-direction: column; margin-top: 15px;">
-                    <input type="text" id="edit-book-title" placeholder="Título" style="width: 100%; margin-bottom: 10px;">
-                    <input type="text" id="edit-book-author" placeholder="Autor" style="width: 100%;">
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="edit-book-title" placeholder="Título">
+                    <input type="text" id="edit-book-author" placeholder="Autor">
                 </div>
                 <button onclick="updateBook()" class="btn-success">Salvar Alterações</button>
             </div>
@@ -138,7 +138,7 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closeModal()">&times;</span>
                 <h3>Ficha de Controle</h3>
-                <div id="modal-details" style="margin: 20px 0; display: flex; flex-direction: column; gap: 10px;">
+                <div id="modal-details" style="margin: 20px 0; display: flex; flex-direction: column; gap: 8px;">
                     </div>
                 <button onclick="updateLoan()" class="btn-success" style="background-color: var(--primary); margin-bottom: 5px;">Atualizar Dados</button>
                 <button id="btn-confirm-return" class="btn-success">Confirmar Entrega (Devolução)</button>

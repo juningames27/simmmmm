@@ -18,12 +18,11 @@ async function loadDashboard() {
         document.getElementById("dash-total-books").textContent = data.totalBooks;
         document.getElementById("dash-rented-books").textContent = data.rentedBooks;
         document.getElementById("dash-late-loans").textContent = data.lateLoans;
-        const isDark = document.body.classList.contains("dark-theme");
-        const color = isDark ? "#fff" : "#333";
+        const color = document.body.classList.contains("dark-theme") ? "#fff" : "#333";
         if (statusChart) statusChart.destroy();
         statusChart = new Chart(document.getElementById("chartStatus"), {
             type: "doughnut",
-            data: { labels: ["Libres", "Alugados"], datasets: [{ data: [data.availableBooks, data.rentedBooks], backgroundColor: ["#007bff", "#dc3545"] }] },
+            data: { labels: ["Livres", "Alugados"], datasets: [{ data: [data.availableBooks, data.rentedBooks], backgroundColor: ["#007bff", "#dc3545"] }] },
             options: { plugins: { legend: { labels: { color: color } } } }
         });
         if (monthlyChart) monthlyChart.destroy();
@@ -41,12 +40,12 @@ async function loadBooks() {
     renderBooks(allBooks);
 }
 
-function renderBooks(booksList) {
+function renderBooks(list) {
     const tbody = document.getElementById("table-books-body");
     tbody.innerHTML = "";
     const datalist = document.getElementById("books-datalist");
     datalist.innerHTML = "";
-    booksList.forEach(b => {
+    list.forEach(b => {
         tbody.innerHTML += `
         <tr>
             <td>${b.id}</td>
@@ -73,25 +72,18 @@ function openEditBookModal(id, title, author) {
 function closeEditBookModal() { document.getElementById("modal-edit-book").style.display = "none"; }
 
 async function updateBook() {
-    const title = document.getElementById("edit-book-title").value;
-    const author = document.getElementById("edit-book-author").value;
     const res = await fetch(`${API_URL}/books/${currentBookId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, author })
+        body: JSON.stringify({ title: document.getElementById("edit-book-title").value, author: document.getElementById("edit-book-author").value })
     });
     if (res.ok) { closeEditBookModal(); loadBooks(); }
 }
 
-document.getElementById("search-book-input").addEventListener("input", (e) => {
-    const term = e.target.value.toLowerCase();
-    renderBooks(allBooks.filter(b => b.title.toLowerCase().includes(term) || b.author.toLowerCase().includes(term)));
-});
-
 async function deleteBook(id) {
-    if (confirm("Remover do acervo?")) {
+    if (confirm("Remover livro do acervo?")) {
         const res = await fetch(`${API_URL}/books/${id}`, { method: "DELETE" });
-        if (res.ok) { loadBooks(); loadDashboard(); } else { const err = await res.json(); alert(err.error); }
+        if (res.ok) { loadBooks(); loadDashboard(); } else { alert((await res.json()).error); }
     }
 }
 
@@ -118,7 +110,7 @@ async function loadLoans() {
         <tr onclick='openModal(${JSON.stringify(l)})' style="cursor:pointer">
             <td>${l.studentName}</td>
             <td>${l.school}</td>
-            <td>${l.grade || "---"}</td>
+            <td>${l.grade}</td>
             <td>${l.bookTitle}</td>
             <td>${l.returnDate} ${isLate ? '<span class="badge-late">ATRASADO</span>' : ""}</td>
             <td><button class="btn-ver">🔍 Detalhes</button></td>
@@ -126,35 +118,16 @@ async function loadLoans() {
     });
 }
 
-document.getElementById("form-loan").onsubmit = async (e) => {
-    e.preventDefault();
-    const searchValue = document.getElementById("loan-book-search").value;
-    const bookId = searchValue.includes("ID: ") ? searchValue.split("ID: ")[1].trim() : "";
-    const res = await fetch(`${API_URL}/loans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            studentName: document.getElementById("loan-student").value,
-            phone: document.getElementById("loan-phone").value,
-            school: document.getElementById("loan-school").value,
-            grade: document.getElementById("loan-grade").value,
-            bookId: bookId,
-            rentalDate: document.getElementById("loan-date").value
-        })
-    });
-    if (res.ok) { e.target.reset(); document.getElementById("loan-date").valueAsDate = new Date(); loadLoans(); loadDashboard(); }
-    else { const err = await res.json(); alert(err.error); }
-};
-
-function openModal(loan) {
-    currentLoanId = loan.id;
+// EDIÇÃO DE ALUNO (DENTRO DO MODAL DE EMPRÉSTIMO)
+function openModal(l) {
+    currentLoanId = l.id;
     document.getElementById("modal-details").innerHTML = `
-        <label>Aluno:</label><input type="text" id="edit-loan-student" value="${loan.studentName}">
-        <label>Telefone:</label><input type="text" id="edit-loan-phone" value="${loan.phone}">
-        <label>Escola:</label><input type="text" id="edit-loan-school" value="${loan.school}">
-        <label>Série:</label><input type="text" id="edit-loan-grade" value="${loan.grade}">
-        <p><b>Livro:</b> ${loan.bookTitle}</p>
-        <p><b>Entrega prevista:</b> ${loan.returnDate}</p>
+        <label>Aluno:</label><input type="text" id="edit-loan-student" value="${l.studentName}">
+        <label>Telefone:</label><input type="tel" id="edit-loan-phone" value="${l.phone}">
+        <label>Escola:</label><input type="text" id="edit-loan-school" value="${l.school}">
+        <label>Série:</label><input type="text" id="edit-loan-grade" value="${l.grade}">
+        <p style="margin-top:10px"><b>Livro:</b> ${l.bookTitle}</p>
+        <p><b>Devolução:</b> ${l.returnDate}</p>
     `;
     document.getElementById("modal-loan").style.display = "block";
 }
@@ -181,11 +154,16 @@ document.getElementById("btn-confirm-return").onclick = async () => {
 };
 
 document.getElementById("btn-delete-loan").onclick = async () => {
-    if (confirm("Remover registro?")) {
+    if (confirm("Remover registro permanente?")) {
         await fetch(`${API_URL}/loans/${currentLoanId}`, { method: "DELETE" });
         closeModal(); loadLoans(); loadDashboard();
     }
 };
+
+document.getElementById("search-book-input").addEventListener("input", (e) => {
+    const term = e.target.value.toLowerCase();
+    renderBooks(allBooks.filter(b => b.title.toLowerCase().includes(term) || b.author.toLowerCase().includes(term)));
+});
 
 function toggleTheme() {
     const isDark = document.body.classList.contains("dark-theme");
@@ -197,10 +175,8 @@ function toggleTheme() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("theme") !== "light") {
-        document.body.className = "dark-theme";
-        document.getElementById("theme-toggle").textContent = "⚪";
-    } else {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light") {
         document.body.className = "light-theme";
         document.getElementById("theme-toggle").textContent = "⚫";
     }
