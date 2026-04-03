@@ -26,9 +26,9 @@ header {
 }
 
 .logo-img { 
-    height: 45px; /* Define um tamanho fixo */
+    height: 45px !important; /* O !important garante que essa regra vença qualquer bug */
     width: auto;  
-    max-width: 150px; /* Impede que a imagem cresça demais se for gigante */
+    max-width: 150px; 
     object-fit: contain;
     display: block;
 }
