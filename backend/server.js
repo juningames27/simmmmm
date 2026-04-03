@@ -76,7 +76,7 @@ app.post('/api/loans', (req, res) => {
         const newLoan = {
             id: Date.now().toString(),
             studentName: req.body.studentName,
-            phone: req.body.phone, // Novo parâmetro
+            phone: req.body.phone, // Novo parâmetro: Telefone
             school: req.body.school,
             grade: req.body.grade,
             bookId: book.id,
@@ -148,4 +148,4 @@ app.get('/api/dashboard', (req, res) => {
     res.json({ totalBooks, rentedBooks, availableBooks, lateLoans, monthlyData });
 });
 
-app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
+app.listen(3000, () => console.log('Servidor rodando com IDs automáticos e Telefone!'));

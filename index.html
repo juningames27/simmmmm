@@ -35,10 +35,10 @@
         </section>
 
         <section id="view-books" class="view">
-            <h2>Cadastrar Novo Livro</h2>
+            <h2>Cadastrar Livro</h2>
             <div class="form-container">
                 <form id="form-book" class="input-group">
-                    <input type="text" id="book-title" placeholder="Título do Livro *" required>
+                    <input type="text" id="book-title" placeholder="Título *" required>
                     <input type="text" id="book-author" placeholder="Autor *" required>
                     <button type="submit">Cadastrar</button>
                 </form>
@@ -54,9 +54,9 @@
             <div class="form-container">
                 <form id="form-loan" class="input-group">
                     <input type="text" id="loan-student" placeholder="Nome do Aluno *" required>
-                    <input type="tel" id="loan-phone" placeholder="Telefone (WhatsApp) *" required>
+                    <input type="tel" id="loan-phone" placeholder="Telefone/WhatsApp *" required>
                     <select id="loan-school" required>
-                        <option value="">Selecione a Escola</option>
+                        <option value="">Escola</option>
                         <option value="E.M Cléber Sampaio">E.M Cléber Sampaio</option>
                         <option value="E.M Moacyr Bacelar Nunes">E.M Moacyr Bacelar Nunes</option>
                         <option value="E.M José Barreto De Araújo">E.M José Barreto De Araújo</option>
@@ -69,10 +69,10 @@
                         <option value="7° Ano">7° Ano</option><option value="8° Ano">8° Ano</option>
                         <option value="9° Ano">9° Ano</option>
                     </select>
-                    <input list="books-datalist" id="loan-book-search" placeholder="Buscar livro disponível..." required>
+                    <input list="books-datalist" id="loan-book-search" placeholder="Buscar livro..." required>
                     <datalist id="books-datalist"></datalist>
                     <input type="date" id="loan-date" required>
-                    <button type="submit">Confirmar Empréstimo</button>
+                    <button type="submit">Confirmar</button>
                 </form>
             </div>
             <table>
@@ -86,12 +86,11 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h3>Ficha de Controle</h3>
-            <div id="modal-details" style="margin: 20px 0; line-height: 1.6;"></div>
-            <button id="btn-confirm-return" class="btn-success">Confirmar Devolução</button>
-            <button id="btn-delete-loan" class="btn-danger-outline">Excluir Registro</button>
+            <div id="modal-details" style="margin: 20px 0;"></div>
+            <button id="btn-confirm-return" class="btn-success">Confirmar Entrega</button>
+            <button id="btn-delete-loan" class="btn-danger-outline">Remover Empréstimo</button>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
