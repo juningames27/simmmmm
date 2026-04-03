@@ -57,7 +57,6 @@ function renderBooks(list) {
                 <button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button>
             </td>
         </tr>`;
-        if (b.status === "Disponível") datalist.innerHTML += `<option value="${b.title} | ID: ${b.id}">`;
     });
 }
 
