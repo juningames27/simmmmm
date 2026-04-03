@@ -52,10 +52,10 @@ function renderBooks(booksList) {
             <td>${b.title}</td>
             <td>${b.author}</td>
             <td class="status-${b.status}">${b.status}</td> 
-            <td>
-                <button onclick="openEditBookModal('${b.id}', '${b.title}', '${b.author}')" class="btn-edit-row">✏️</button>
-                <button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button>
-            </td>
+    <td>
+        <button onclick="openEditBookModal('${b.id}', '${b.title}', '${b.author}')" class="btn-edit-row">AQUI</button>
+        <button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button>
+    </td>
         </tr>`;
         if (b.status === "Disponível") datalist.innerHTML += `<option value="${b.title} | ID: ${b.id}">`;
     });
