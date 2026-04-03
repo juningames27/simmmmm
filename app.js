@@ -53,7 +53,7 @@ function renderBooks(booksList) {
             <td>${b.author}</td>
             <td class="status-${b.status}">${b.status}</td> 
     <td>
-        <button onclick="openEditBookModal('${b.id}', '${b.title}', '${b.author}')" class="btn-edit-row">AQUI</button>
+        <button onclick="openEditBookModal('${b.id}', '${b.title}', '${b.author}')" class="btn-edit-row">✏️</button>
         <button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button>
     </td>
         </tr>`;
