@@ -11,6 +11,7 @@ async function navigate(viewId) {
     if (viewId === "view-loans") { await loadBooks(); loadLoans(); }
 }
 
+// --- DASHBOARD ---
 async function loadDashboard() {
     try {
         const res = await fetch(`${API_URL}/dashboard`);
@@ -34,6 +35,7 @@ async function loadDashboard() {
     } catch (e) { console.error(e); }
 }
 
+// --- LIVROS ---
 async function loadBooks() {
     const res = await fetch(`${API_URL}/books`);
     allBooks = await res.json();
@@ -52,16 +54,15 @@ function renderBooks(booksList) {
             <td>${b.title}</td>
             <td>${b.author}</td>
             <td class="status-${b.status}">${b.status}</td> 
-    <td>
-        <button onclick="openEditBookModal('${b.id}', '${b.title}', '${b.author}')" class="btn-edit-row">✏️</button>
-        <button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button>
-    </td>
+            <td>
+                <button onclick="openEditBookModal('${b.id}', '${b.title}', '${b.author}')" class="btn-edit-row">✏️</button>
+                <button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button>
+            </td>
         </tr>`;
         if (b.status === "Disponível") datalist.innerHTML += `<option value="${b.title} | ID: ${b.id}">`;
     });
 }
 
-// FUNÇÕES DE EDIÇÃO DE LIVRO
 function openEditBookModal(id, title, author) {
     currentBookId = id;
     document.getElementById("edit-book-title").value = title;
@@ -104,6 +105,7 @@ document.getElementById("form-book").onsubmit = async (e) => {
     e.target.reset(); loadBooks();
 };
 
+// --- EMPRÉSTIMOS (ALUNOS) ---
 async function loadLoans() {
     const res = await fetch(`${API_URL}/loans`);
     const loans = await res.json();
@@ -120,9 +122,44 @@ async function loadLoans() {
             <td>${l.grade || "---"}</td>
             <td>${l.bookTitle}</td>
             <td>${l.returnDate} ${isLate ? '<span class="badge-late">ATRASADO</span>' : ""}</td>
-            <td><button class="btn-ver">🔍 Detalhes</button></td>
+            <td>
+                <button onclick="event.stopPropagation(); openEditLoanModal('${l.id}', '${l.studentName}', '${l.school}', '${l.grade}')" class="btn-edit-row">✏️</button>
+                <button class="btn-ver">🔍 Detalhes</button>
+            </td>
         </tr>`;
     });
+}
+
+function openEditLoanModal(id, student, school, grade) {
+    currentLoanId = id;
+    document.getElementById("edit-loan-student").value = student;
+    document.getElementById("edit-loan-school").value = school;
+    document.getElementById("edit-loan-grade").value = grade;
+    document.getElementById("modal-edit-loan").style.display = "block";
+    closeModal(); // Fecha o modal de detalhes caso esteja aberto
+}
+
+function closeEditLoanModal() { 
+    document.getElementById("modal-edit-loan").style.display = "none"; 
+}
+
+async function updateLoan() {
+    const studentName = document.getElementById("edit-loan-student").value;
+    const school = document.getElementById("edit-loan-school").value;
+    const grade = document.getElementById("edit-loan-grade").value;
+
+    const res = await fetch(`${API_URL}/loans/${currentLoanId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentName, school, grade })
+    });
+
+    if (res.ok) { 
+        closeEditLoanModal(); 
+        loadLoans(); 
+    } else {
+        alert("Erro ao atualizar dados do aluno.");
+    }
 }
 
 document.getElementById("form-loan").onsubmit = async (e) => {
@@ -144,6 +181,7 @@ document.getElementById("form-loan").onsubmit = async (e) => {
     else { alert((await res.json()).error); }
 };
 
+// --- MODAIS GERAIS ---
 function openModal(id, student, book, date) {
     currentLoanId = id;
     document.getElementById("modal-details").innerHTML = `<p><b>Aluno:</b> ${student}</p><p><b>Livro:</b> ${book}</p><p><b>Entrega:</b> ${date}</p>`;
@@ -164,6 +202,7 @@ document.getElementById("btn-delete-loan").onclick = async () => {
     }
 };
 
+// --- TEMA E INICIALIZAÇÃO ---
 function toggleTheme() {
     const isDark = document.body.classList.contains("dark-theme");
     document.body.classList.toggle("light-theme", isDark);
@@ -174,10 +213,13 @@ function toggleTheme() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const saved = localStorage.getItem("theme");
+    const saved = localStorage.getItem("theme") || "dark";
     if (saved === "light") {
         document.body.className = "light-theme";
         document.getElementById("theme-toggle").textContent = "⚫";
+    } else {
+        document.body.className = "dark-theme";
+        document.getElementById("theme-toggle").textContent = "⚪";
     }
     document.getElementById("loan-date").valueAsDate = new Date();
     loadDashboard();

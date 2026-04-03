@@ -141,6 +141,20 @@ app.get("/api/dashboard", (req, res) => {
     });
     res.json({ totalBooks, rentedBooks, availableBooks: totalBooks - rentedBooks, lateLoans, monthlyData });
 });
-
+app.put("/api/loans/:id", (req, res) => {
+    const db = readDB();
+    const idx = db.loans.findIndex(l => String(l.id) === String(req.params.id));
+    
+    if (idx !== -1) {
+        db.loans[idx].studentName = req.body.studentName || db.loans[idx].studentName;
+        db.loans[idx].school = req.body.school || db.loans[idx].school;
+        db.loans[idx].grade = req.body.grade || db.loans[idx].grade;
+        
+        writeDB(db);
+        res.json(db.loans[idx]);
+    } else {
+        res.status(404).send("Empréstimo não encontrado");
+    }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

@@ -113,7 +113,34 @@
                 <button onclick="updateBook()" class="btn-success">Salvar Alterações</button>
             </div>
         </div>
+        
+        <div id="modal-edit-loan" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeEditLoanModal()">&times;</span>
+                <h3>Editar Dados do Aluno</h3>
+                <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="edit-loan-student" placeholder="Nome do Aluno">
+                    <select id="edit-loan-school">
+                        <option value="E.M Cléber Sampaio">E.M Cléber Sampaio</option>
+                        <option value="E.M Moacyr Bacelar Nunes">E.M Moacyr Bacelar Nunes</option>
+                        <option value="E.M José Barreto De Araújo">E.M José Barreto De Araújo</option>
+                    </select>
+                    <select id="edit-loan-grade">
+                        <option value="1° Ano">1° Ano</option>
+                        <option value="2° Ano">2° Ano</option>
+                        <option value="3° Ano">3° Ano</option>
+                        <option value="4° Ano">4° Ano</option>
+                        <option value="5° Ano">5° Ano</option>
+                        <option value="6° Ano">6° Ano</option>
+                        <option value="7° Ano">7° Ano</option>
+                        <option value="8° Ano">8° Ano</option>
+                        <option value="9° Ano">9° Ano</option>
+                    </select>
+                </div>
+                <button onclick="updateLoan()" class="btn-success">Salvar Alterações</button>
+            </div>
+        </div>
 
-        <script src="app.js"></script>
+        <script src="app.js?v=1.2"></script>
     </body>
 </html>
