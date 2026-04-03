@@ -75,7 +75,10 @@ async function updateBook() {
     const res = await fetch(`${API_URL}/books/${currentBookId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: document.getElementById("edit-book-title").value, author: document.getElementById("edit-book-author").value })
+        body: JSON.stringify({ 
+            title: document.getElementById("edit-book-title").value, 
+            author: document.getElementById("edit-book-author").value 
+        })
     });
     if (res.ok) { closeEditBookModal(); loadBooks(); }
 }
