@@ -168,7 +168,7 @@ function toggleTheme() {
     const isDark = document.body.classList.contains('dark-theme');
     document.body.classList.toggle('light-theme', isDark);
     document.body.classList.toggle('dark-theme', !isDark);
-    document.getElementById('theme-toggle').textContent = isDark ? '🌑' : 'C';
+    document.getElementById('theme-toggle').textContent = isDark ? '🌑' : '☀️';
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
     loadDashboard();
 }
