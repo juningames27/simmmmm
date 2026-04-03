@@ -1,3 +1,6 @@
+
+
+style
 :root {
     --bg-color: #f0f2f5; --card-bg: #ffffff; --text-main: #1c1e21;
     --text-sec: #606770; --border: #dddfe2; --primary: #007bff;
@@ -12,8 +15,8 @@ body.dark-theme {
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 body { background: var(--bg-color); color: var(--text-main); transition: 0.3s; }
 
-header { 
-    background: var(--card-bg); padding: 1rem 5%; display: flex; 
+header {
+    background: var(--card-bg); padding: 1rem 5%; display: flex;
     justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -24,12 +27,24 @@ nav { display: flex; gap: 20px; align-items: center; }
 .nav-btn { background: none; border: none; cursor: pointer; font-weight: bold; color: var(--text-sec); font-size: 1rem; }
 .nav-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
 
-#theme-toggle { 
-    background: transparent !important; border: none !important; outline: none !important;
-    cursor: pointer; font-size: 1.8rem; padding: 0; margin: 0; display: flex;
-    align-items: center; justify-content: center; transition: transform 0.2s;
+/* AJUSTE AQUI: Botão do Tema 100% Transparente */
+#theme-toggle {
+    background: transparent !important; /* Força fundo transparente */
+    border: none !important;           /* Remove qualquer borda */
+    outline: none !important;          /* Remove contorno de clique */
+    cursor: pointer;
+    font-size: 1.8rem;                 /* Aumenta um pouco o emoji */
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
 }
-#theme-toggle:hover { transform: scale(1.1); }
+
+#theme-toggle:hover {
+    transform: scale(1.1); /* Efeito leve ao passar o mouse */
+}
 
 main { padding: 2rem 5%; }
 .view { display: none; }
@@ -39,50 +54,13 @@ main { padding: 2rem 5%; }
 .card { background: var(--card-bg); padding: 25px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
 .card p { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }
 
-/* Ajuste para os Gráficos não cortarem */
-.charts-container { 
-    display: grid; 
-    grid-template-columns: 1fr; 
-    gap: 20px; 
-}
+.charts-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+.chart-box { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
 
-@media (min-width: 992px) {
-    .charts-container { grid-template-columns: 1fr 2fr; }
-}
-
-.chart-box { 
-    background: var(--card-bg); 
-    padding: 20px; 
-    border-radius: 12px; 
-    border: 1px solid var(--border); 
-    height: 320px; /* Isso impede que o gráfico 'estoure' a tela */
-    position: relative;
-    width: 100%;
-}
-
-canvas { 
-    width: 100% !important; 
-    height: 100% !important; 
-}
 .form-container { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
-/* Isso garante que inputs e selects tenham a mesma cor e estilo */
-input, select { 
-    flex: 1; 
-    min-width: 150px; 
-    padding: 12px; 
-    border-radius: 8px; 
-    border: 1px solid var(--border); 
-    background: var(--card-bg); /* Cor de fundo do card (claro ou escuro) */
-    color: var(--text-main);    /* Cor do texto principal */
-    transition: 0.3s;
-}
+input, select { flex: 1; min-width: 150px; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); }
 
-/* Ajuste específico para o texto das opções dentro do select no modo escuro */
-select option {
-    background: var(--card-bg);
-    color: var(--text-main);
-}
 button[type="submit"], .btn-success { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 .btn-success { background: var(--success); width: 100%; margin-top: 20px; }
 
