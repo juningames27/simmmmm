@@ -105,8 +105,8 @@
                 <span class="close-btn" onclick="closeEditBookModal()">&times;</span>
                 <h3>Editar Livro</h3>
                 <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 10px;">
-                    <input type="text" id="edit-book-title" placeholder="Título">
-                    <input type="text" id="edit-book-author" placeholder="Autor">
+                    <label>Título:</label><input type="text" id="edit-book-title">
+                    <label>Autor:</label><input type="text" id="edit-book-author">
                 </div>
                 <button onclick="updateBook()" class="btn-success">Salvar Alterações</button>
             </div>
@@ -115,7 +115,7 @@
         <div id="modal-edit-loan" class="modal">
             <div class="modal-content">
                 <span class="close-btn" onclick="closeEditLoanModal()">&times;</span>
-                <h3>Editar Dados do Empréstimo</h3>
+                <h3>Editar Dados do Aluno</h3>
                 <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="edit-loan-student" placeholder="Nome do Aluno">
                     <input type="tel" id="edit-loan-phone" placeholder="Telefone">
@@ -125,14 +125,10 @@
                         <option value="E.M José Barreto De Araújo">E.M José Barreto De Araújo</option>
                     </select>
                     <select id="edit-loan-grade">
-                        <option value="1° Ano">1° Ano</option>
-                        <option value="2° Ano">2° Ano</option>
-                        <option value="3° Ano">3° Ano</option>
-                        <option value="4° Ano">4° Ano</option>
-                        <option value="5° Ano">5° Ano</option>
-                        <option value="6° Ano">6° Ano</option>
-                        <option value="7° Ano">7° Ano</option>
-                        <option value="8° Ano">8° Ano</option>
+                        <option value="1° Ano">1° Ano</option><option value="2° Ano">2° Ano</option>
+                        <option value="3° Ano">3° Ano</option><option value="4° Ano">4° Ano</option>
+                        <option value="5° Ano">5° Ano</option><option value="6° Ano">6° Ano</option>
+                        <option value="7° Ano">7° Ano</option><option value="8° Ano">8° Ano</option>
                         <option value="9° Ano">9° Ano</option>
                     </select>
                 </div>
@@ -140,6 +136,6 @@
             </div>
         </div>
 
-        <script src="app.js?v=2.0"></script>
+        <script src="app.js?v=2.1"></script>
     </body>
 </html>

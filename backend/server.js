@@ -16,46 +16,20 @@ if (!fs.existsSync(DB_FILE)) {
 const readDB = () => JSON.parse(fs.readFileSync(DB_FILE));
 const writeDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-app.get("/", (req, res) => res.send("Servidor Biblioteca NTE Ativo!"));
+app.get("/", (req, res) => res.send("Servidor Biblioteca NTE Online!"));
 
-// LIVROS
+// --- LIVROS ---
 app.get("/api/books", (req, res) => res.json(readDB().books));
 
 app.post("/api/books", (req, res) => {
     const db = readDB();
-    const newBook = {
-        id: (db.nextBookId++).toString(),
-        title: req.body.title,
-        author: req.body.author,
-        status: "Disponível"
-    };
+    const newBook = { id: (db.nextBookId++).toString(), title: req.body.title, author: req.body.author, status: "Disponível" };
     db.books.push(newBook);
     writeDB(db);
     res.json(newBook);
 });
 
-app.put("/api/books/:id", (req, res) => {
-    const db = readDB();
-    const idx = db.books.findIndex(b => b.id === req.params.id);
-    if (idx !== -1) {
-        db.books[idx].title = req.body.title;
-        db.books[idx].author = req.body.author;
-        writeDB(db);
-        res.json(db.books[idx]);
-    } else res.status(404).send("Livro não encontrado");
-});
-
-app.delete("/api/books/:id", (req, res) => {
-    const db = readDB();
-    const idx = db.books.findIndex(b => b.id === req.params.id);
-    if (idx !== -1 && db.books[idx].status !== "Alugado") {
-        db.books.splice(idx, 1);
-        writeDB(db);
-        res.send({ message: "OK" });
-    } else res.status(400).send({ error: "Livro alugado não pode ser removido" });
-});
-
-// EMPRÉSTIMOS
+// --- EMPRÉSTIMOS ---
 app.get("/api/loans", (req, res) => res.json(readDB().loans));
 
 app.post("/api/loans", (req, res) => {
@@ -65,7 +39,6 @@ app.post("/api/loans", (req, res) => {
         const dateObj = new Date(req.body.rentalDate);
         dateObj.setDate(dateObj.getDate() + 7);
         const returnDate = dateObj.toLocaleDateString('pt-BR');
-
         const newLoan = {
             id: Date.now().toString(),
             studentName: req.body.studentName,
@@ -95,7 +68,7 @@ app.put("/api/loans/:id", (req, res) => {
         db.loans[idx].grade = req.body.grade || db.loans[idx].grade;
         writeDB(db);
         res.json(db.loans[idx]);
-    } else res.status(404).send("Empréstimo não encontrado");
+    } else res.status(404).send("Não encontrado");
 });
 
 app.delete("/api/loans/:id", (req, res) => {
@@ -106,11 +79,10 @@ app.delete("/api/loans/:id", (req, res) => {
         if (book) book.status = "Disponível";
         db.loans.splice(idx, 1);
         writeDB(db);
-        res.send({ message: "OK" });
+        res.send({ message: "Removido" });
     } else res.status(404).send("Não encontrado");
 });
 
-// DASHBOARD
 app.get("/api/dashboard", (req, res) => {
     const db = readDB();
     const rented = db.books.filter(b => b.status === "Alugado").length;
