@@ -20,14 +20,23 @@ app.get('/api/books', (req, res) => res.json(readDB().books));
 
 app.post('/api/books', (req, res) => {
     const db = readDB();
-    const newBook = { ...req.body, status: 'Disponível' };
-    if (!newBook.id) newBook.id = Date.now().toString().slice(-6);
+    
+    // Lógica de ID Automático (1, 2, 3...)
+    const maxId = db.books.reduce((max, book) => Math.max(max, parseInt(book.id) || 0), 0);
+    const newId = (maxId + 1).toString();
+
+    const newBook = { 
+        id: newId,
+        title: req.body.title,
+        author: req.body.author,
+        status: 'Disponível' 
+    };
+
     db.books.push(newBook);
     writeDB(db);
     res.json(newBook);
 });
 
-// REMOVER LIVRO
 app.delete('/api/books/:id', (req, res) => {
     const db = readDB();
     const bookIndex = db.books.findIndex(b => String(b.id) === String(req.params.id));
@@ -67,6 +76,7 @@ app.post('/api/loans', (req, res) => {
         const newLoan = {
             id: Date.now().toString(),
             studentName: req.body.studentName,
+            phone: req.body.phone, // Novo parâmetro
             school: req.body.school,
             grade: req.body.grade,
             bookId: book.id,
@@ -138,4 +148,4 @@ app.get('/api/dashboard', (req, res) => {
     res.json({ totalBooks, rentedBooks, availableBooks, lateLoans, monthlyData });
 });
 
-app.listen(3000, () => console.log('Servidor rodando com funções de exclusão!'));
+app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
