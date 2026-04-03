@@ -44,8 +44,23 @@ main { padding: 2rem 5%; }
 
 .form-container { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border); }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
-input, select { flex: 1; min-width: 150px; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); }
+/* Isso garante que inputs e selects tenham a mesma cor e estilo */
+input, select { 
+    flex: 1; 
+    min-width: 150px; 
+    padding: 12px; 
+    border-radius: 8px; 
+    border: 1px solid var(--border); 
+    background: var(--card-bg); /* Cor de fundo do card (claro ou escuro) */
+    color: var(--text-main);    /* Cor do texto principal */
+    transition: 0.3s;
+}
 
+/* Ajuste específico para o texto das opções dentro do select no modo escuro */
+select option {
+    background: var(--card-bg);
+    color: var(--text-main);
+}
 button[type="submit"], .btn-success { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 .btn-success { background: var(--success); width: 100%; margin-top: 20px; }
 
