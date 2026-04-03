@@ -95,18 +95,31 @@ app.post('/api/loans', (req, res) => {
     }
 });
 
-app.post('/api/loans/:id/return', (req, res) => {
+app.post('/api/books', (req, res) => {
     const db = readDB();
-    const loan = db.loans.find(l => l.id === req.params.id);
-    if (loan) {
-        const book = db.books.find(b => b.id === loan.bookId);
-        if (book) book.status = 'Disponível';
-        loan.status = 'Finalizado';
-        writeDB(db);
-        res.json({ message: 'Devolvido!' });
-    } else {
-        res.status(404).json({ error: 'Não encontrado.' });
+    
+    // Se por algum motivo o nextBookId não existir, inicializamos ele
+    if (db.nextBookId === undefined) {
+        const maxId = db.books.reduce((max, book) => Math.max(max, parseInt(book.id) || 0), 0);
+        db.nextBookId = maxId + 1;
     }
+
+    // Usamos o valor atual do contador para o novo livro
+    const newId = db.nextBookId.toString();
+
+    const newBook = { 
+        id: newId,
+        title: req.body.title,
+        author: req.body.author,
+        status: 'Disponível' 
+    };
+
+    // Adiciona o livro e INCREMENTA o contador para a próxima vez
+    db.books.push(newBook);
+    db.nextBookId++; 
+    
+    writeDB(db);
+    res.json(newBook);
 });
 
 app.delete('/api/loans/:id', (req, res) => {
