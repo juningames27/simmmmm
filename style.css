@@ -26,8 +26,9 @@ header {
 }
 
 .logo-img { 
-    height: 45px; /* Altura ideal para o cabeçalho */
-    width: auto;  /* Mantém a proporção da imagem */
+    height: 45px; /* Define um tamanho fixo */
+    width: auto;  
+    max-width: 150px; /* Impede que a imagem cresça demais se for gigante */
     object-fit: contain;
     display: block;
 }
