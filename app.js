@@ -64,7 +64,7 @@ async function loadBooks() {
                 <td>${b.id}</td>
                 <td>${b.title}</td>
                 <td>${b.author}</td>
-                <td class="status-${b.status}">${b.status}</td>
+                <td class="status-${b.status}">${b.status}</td> 
                 <td><button onclick="deleteBook('${b.id}')" class="btn-delete-row">🗑️</button></td>
             </tr>`;
         if (b.status === 'Disponível') datalist.innerHTML += `<option value="${b.title} | ID: ${b.id}">`;
@@ -85,13 +85,13 @@ document.getElementById('form-book').onsubmit = async (e) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+            id: document.getElementById('book-id').value,
             title: document.getElementById('book-title').value,
             author: document.getElementById('book-author').value
         })
     });
     e.target.reset();
     loadBooks();
-    loadDashboard();
 };
 
 async function loadLoans() {
@@ -107,9 +107,10 @@ async function loadLoans() {
         const isLate = dateLimit < today;
 
         tbody.innerHTML += `
-            <tr onclick="openModal('${l.id}', '${l.studentName}', '${l.phone}', '${l.bookTitle}', '${l.returnDate}')" style="cursor:pointer">
+            <tr onclick="openModal('${l.id}', '${l.studentName}', '${l.bookTitle}', '${l.returnDate}')" style="cursor:pointer">
                 <td>${l.studentName}</td>
-                <td>${l.phone || '---'}</td>
+                <td>${l.school}</td>
+                <td>${l.grade || '---'}</td>
                 <td>${l.bookTitle}</td>
                 <td>${l.returnDate} ${isLate ? '<span class="badge-late">ATRASADO</span>' : ''}</td>
                 <td><button class="btn-ver">🔍 Detalhes</button></td>
@@ -127,7 +128,6 @@ document.getElementById('form-loan').onsubmit = async (e) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             studentName: document.getElementById('loan-student').value,
-            phone: document.getElementById('loan-phone').value,
             school: document.getElementById('loan-school').value,
             grade: document.getElementById('loan-grade').value,
             bookId: bookId,
@@ -144,14 +144,9 @@ document.getElementById('form-loan').onsubmit = async (e) => {
     }
 };
 
-function openModal(id, student, phone, book, date) {
+function openModal(id, student, book, date) {
     currentLoanId = id;
-    document.getElementById('modal-details').innerHTML = `
-        <p><b>Aluno:</b> ${student}</p>
-        <p><b>Telefone:</b> ${phone}</p>
-        <p><b>Livro:</b> ${book}</p>
-        <p><b>Entrega:</b> ${date}</p>
-    `;
+    document.getElementById('modal-details').innerHTML = `<p><b>Aluno:</b> ${student}</p><p><b>Livro:</b> ${book}</p><p><b>Entrega:</b> ${date}</p>`;
     document.getElementById('modal-loan').style.display = 'block';
 }
 

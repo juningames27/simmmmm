@@ -68,9 +68,22 @@ table { width: 100%; border-collapse: collapse; margin-top: 20px; background: va
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
 th { background: rgba(0,0,0,0.05); color: var(--text-sec); }
 
-.status-Disponível { color: var(--success); font-weight: bold; }
-.status-Alugado { color: var(--warning); font-weight: bold; }
+/* Estilos de Status Atualizados */
+.status-Disponível { 
+    color: #007bff; /* Azul */
+    font-weight: bold; 
+}
 
+.status-Alugado { 
+    color: #dc3545; /* Vermelho */
+    font-weight: bold; 
+}
+
+/* Opcional: Se quiser que apareça um fundo suave (tipo etiqueta) */
+td.status-Disponível, td.status-Alugado {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
 .btn-delete-row { background: none; border: none; cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; }
 .btn-delete-row:hover { filter: grayscale(0); transform: scale(1.2); }
 
