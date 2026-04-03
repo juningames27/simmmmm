@@ -1,0 +1,141 @@
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+const DB_FILE = 'db.json';
+
+if (!fs.existsSync(DB_FILE)) {
+    fs.writeFileSync(DB_FILE, JSON.stringify({ books: [], loans: [] }));
+}
+
+const readDB = () => JSON.parse(fs.readFileSync(DB_FILE));
+const writeDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+
+// --- LIVROS ---
+app.get('/api/books', (req, res) => res.json(readDB().books));
+
+app.post('/api/books', (req, res) => {
+    const db = readDB();
+    const newBook = { ...req.body, status: 'Disponível' };
+    if (!newBook.id) newBook.id = Date.now().toString().slice(-6);
+    db.books.push(newBook);
+    writeDB(db);
+    res.json(newBook);
+});
+
+// REMOVER LIVRO
+app.delete('/api/books/:id', (req, res) => {
+    const db = readDB();
+    const bookIndex = db.books.findIndex(b => String(b.id) === String(req.params.id));
+    
+    if (bookIndex !== -1) {
+        if (db.books[bookIndex].status === 'Alugado') {
+            return res.status(400).json({ error: 'Não é possível remover um livro alugado!' });
+        }
+        db.books.splice(bookIndex, 1);
+        writeDB(db);
+        res.json({ message: 'Livro removido!' });
+    } else {
+        res.status(404).json({ error: 'Livro não encontrado.' });
+    }
+});
+
+// --- EMPRÉSTIMOS ---
+app.get('/api/loans', (req, res) => {
+    const db = readDB();
+    const activeLoans = db.loans.filter(l => l.status === 'Ativo');
+    res.json(activeLoans);
+});
+
+app.post('/api/loans', (req, res) => {
+    const db = readDB();
+    const book = db.books.find(b => String(b.id).trim() === String(req.body.bookId).trim());
+    
+    if (book && book.status && book.status.toLowerCase() === 'disponível') {
+        const dateObj = new Date(req.body.rentalDate);
+        dateObj.setDate(dateObj.getDate() + 7);
+
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = dateObj.getFullYear();
+        const formattedReturnDate = `${day}/${month}/${year}`;
+
+        const newLoan = {
+            id: Date.now().toString(),
+            studentName: req.body.studentName,
+            school: req.body.school,
+            grade: req.body.grade,
+            bookId: book.id,
+            bookTitle: book.title,
+            rentalDate: req.body.rentalDate,
+            returnDate: formattedReturnDate,
+            status: 'Ativo'
+        };
+
+        book.status = 'Alugado';
+        db.loans.push(newLoan);
+        writeDB(db);
+        res.json(newLoan);
+    } else {
+        res.status(400).json({ error: 'Livro indisponível ou não encontrado.' });
+    }
+});
+
+app.post('/api/loans/:id/return', (req, res) => {
+    const db = readDB();
+    const loan = db.loans.find(l => l.id === req.params.id);
+    if (loan) {
+        const book = db.books.find(b => b.id === loan.bookId);
+        if (book) book.status = 'Disponível';
+        loan.status = 'Finalizado';
+        writeDB(db);
+        res.json({ message: 'Devolvido!' });
+    } else {
+        res.status(404).json({ error: 'Não encontrado.' });
+    }
+});
+
+app.delete('/api/loans/:id', (req, res) => {
+    const db = readDB();
+    const loanIndex = db.loans.findIndex(l => l.id === req.params.id);
+    
+    if (loanIndex !== -1) {
+        const loan = db.loans[loanIndex];
+        const book = db.books.find(b => b.id === loan.bookId);
+        if (book) book.status = 'Disponível';
+        db.loans.splice(loanIndex, 1);
+        writeDB(db);
+        res.json({ message: 'Removido!' });
+    } else {
+        res.status(404).json({ error: 'Empréstimo não encontrado.' });
+    }
+});
+
+app.get('/api/dashboard', (req, res) => {
+    const db = readDB();
+    const totalBooks = db.books.length;
+    const rentedBooks = db.books.filter(b => b.status && b.status.toLowerCase() === 'alugado').length;
+    const availableBooks = totalBooks - rentedBooks;
+    
+    const today = new Date().setHours(0,0,0,0);
+    const lateLoans = db.loans.filter(l => {
+        if(l.status !== 'Ativo') return false;
+        const parts = l.returnDate.split('/');
+        const dateLimit = new Date(parts[2], parts[1]-1, parts[0]).getTime();
+        return dateLimit < today;
+    }).length;
+
+    const monthlyData = new Array(12).fill(0);
+    db.loans.forEach(loan => {
+        const d = new Date(loan.rentalDate);
+        if (!isNaN(d.getTime())) monthlyData[d.getMonth()]++;
+    });
+
+    res.json({ totalBooks, rentedBooks, availableBooks, lateLoans, monthlyData });
+});
+
+app.listen(3000, () => console.log('Servidor rodando com funções de exclusão!'));

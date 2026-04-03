@@ -1,0 +1,11 @@
+{
+  "books": [
+    {
+      "id": "473647",
+      "title": "DOM CASMURRO",
+      "author": "JOÃO GRILO",
+      "status": "Disponível"
+    }
+  ],
+  "loans": []
+}
