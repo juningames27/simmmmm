@@ -10,60 +10,86 @@ app.use(express.json());
 const DB_FILE = path.join(__dirname, "db.json");
 
 if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify({ books: [], loans: [], nextBookId: 1 }));
+    fs.writeFileSync(
+        DB_FILE,
+        JSON.stringify({ books: [], loans: [], nextBookId: 1 })
+    );
 }
 
 const readDB = () => JSON.parse(fs.readFileSync(DB_FILE));
-const writeDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+const writeDB = (data) =>
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 
-app.get("/", (req, res) => res.send("Servidor Biblioteca NTE Ativo!"));
+app.get("/", (req, res) => res.send("Servidor Biblioteca NTE Online!"));
 
 // --- LIVROS ---
 app.get("/api/books", (req, res) => res.json(readDB().books));
 
 app.post("/api/books", (req, res) => {
     const db = readDB();
-    const newId = (db.nextBookId || 1).toString();
-    const newBook = { id: newId, title: req.body.title, author: req.body.author, status: "Disponível" };
+    if (db.nextBookId === undefined) {
+        const maxId = db.books.reduce((max, book) => Math.max(max, parseInt(book.id) || 0), 0);
+        db.nextBookId = maxId + 1;
+    }
+    const newId = db.nextBookId.toString();
+    const newBook = {
+        id: newId,
+        title: req.body.title,
+        author: req.body.author,
+        status: "Disponível",
+    };
     db.books.push(newBook);
-    db.nextBookId = parseInt(newId) + 1;
+    db.nextBookId++;
     writeDB(db);
     res.json(newBook);
 });
 
-// Rota para EDITAR Livro
+// NOVA ROTA: EDITAR LIVRO
 app.put("/api/books/:id", (req, res) => {
     const db = readDB();
-    const book = db.books.find(b => String(b.id) === String(req.params.id));
-    if (book) {
-        book.title = req.body.title || book.title;
-        book.author = req.body.author || book.author;
+    const bookIndex = db.books.findIndex((b) => String(b.id) === String(req.params.id));
+    if (bookIndex !== -1) {
+        db.books[bookIndex].title = req.body.title;
+        db.books[bookIndex].author = req.body.author;
         writeDB(db);
-        res.json(book);
-    } else res.status(404).json({ error: "Livro não encontrado" });
+        res.json(db.books[bookIndex]);
+    } else {
+        res.status(404).json({ error: "Livro não encontrado." });
+    }
 });
 
 app.delete("/api/books/:id", (req, res) => {
     const db = readDB();
-    const idx = db.books.findIndex(b => String(b.id) === String(req.params.id));
-    if (idx !== -1) {
-        if (db.books[idx].status === "Alugado") return res.status(400).json({ error: "Livro alugado não pode ser removido!" });
-        db.books.splice(idx, 1);
+    const bookIndex = db.books.findIndex((b) => String(b.id) === String(req.params.id));
+    if (bookIndex !== -1) {
+        if (db.books[bookIndex].status === "Alugado") {
+            return res.status(400).json({ error: "Não é possível remover um livro alugado!" });
+        }
+        db.books.splice(bookIndex, 1);
         writeDB(db);
-        res.json({ message: "Removido!" });
-    } else res.status(404).json({ error: "Não encontrado" });
+        res.json({ message: "Livro removido!" });
+    } else {
+        res.status(404).json({ error: "Livro não encontrado." });
+    }
 });
 
 // --- EMPRÉSTIMOS ---
-app.get("/api/loans", (req, res) => res.json(readDB().loans.filter(l => l.status === "Ativo")));
+app.get("/api/loans", (req, res) => {
+    const db = readDB();
+    res.json(db.loans.filter((l) => l.status === "Ativo"));
+});
 
 app.post("/api/loans", (req, res) => {
     const db = readDB();
-    const book = db.books.find(b => String(b.id).trim() === String(req.body.bookId).trim());
-    if (book && book.status === "Disponível") {
+    const book = db.books.find((b) => String(b.id).trim() === String(req.body.bookId).trim());
+    if (book && book.status.toLowerCase() === "disponível") {
         const dateObj = new Date(req.body.rentalDate);
         dateObj.setDate(dateObj.getDate() + 7);
-        const formattedReturnDate = `${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}/${dateObj.getFullYear()}`;
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const year = dateObj.getFullYear();
+        const formattedReturnDate = `${day}/${month}/${year}`;
+
         const newLoan = {
             id: Date.now().toString(),
             studentName: req.body.studentName,
@@ -74,53 +100,47 @@ app.post("/api/loans", (req, res) => {
             bookTitle: book.title,
             rentalDate: req.body.rentalDate,
             returnDate: formattedReturnDate,
-            status: "Ativo"
+            status: "Ativo",
         };
         book.status = "Alugado";
         db.loans.push(newLoan);
         writeDB(db);
         res.json(newLoan);
-    } else res.status(400).json({ error: "Livro indisponível ou inexistente." });
-});
-
-// Rota para EDITAR Empréstimo (Dados do Aluno)
-app.put("/api/loans/:id", (req, res) => {
-    const db = readDB();
-    const loan = db.loans.find(l => l.id === req.params.id);
-    if (loan) {
-        loan.studentName = req.body.studentName || loan.studentName;
-        loan.phone = req.body.phone || loan.phone;
-        loan.school = req.body.school || loan.school;
-        loan.grade = req.body.grade || loan.grade;
-        writeDB(db);
-        res.json(loan);
-    } else res.status(404).json({ error: "Registro não encontrado" });
+    } else {
+        res.status(400).json({ error: "Livro indisponível ou não encontrado." });
+    }
 });
 
 app.delete("/api/loans/:id", (req, res) => {
     const db = readDB();
-    const idx = db.loans.findIndex(l => l.id === req.params.id);
-    if (idx !== -1) {
-        const book = db.books.find(b => b.id === db.loans[idx].bookId);
+    const loanIndex = db.loans.findIndex((l) => l.id === req.params.id);
+    if (loanIndex !== -1) {
+        const book = db.books.find((b) => b.id === db.loans[loanIndex].bookId);
         if (book) book.status = "Disponível";
-        db.loans.splice(idx, 1);
+        db.loans.splice(loanIndex, 1);
         writeDB(db);
-        res.json({ message: "Devolução registrada!" });
-    } else res.status(404).json({ error: "Não encontrado" });
+        res.json({ message: "Removido!" });
+    } else {
+        res.status(404).json({ error: "Empréstimo não encontrado." });
+    }
 });
 
 app.get("/api/dashboard", (req, res) => {
     const db = readDB();
-    const rented = db.books.filter(b => b.status === "Alugado").length;
-    const today = new Date().setHours(0,0,0,0);
-    const late = db.loans.filter(l => {
-        const p = l.returnDate.split("/");
-        return new Date(p[2], p[1]-1, p[0]).getTime() < today;
+    const totalBooks = db.books.length;
+    const rentedBooks = db.books.filter((b) => b.status.toLowerCase() === "alugado").length;
+    const today = new Date().setHours(0, 0, 0, 0);
+    const lateLoans = db.loans.filter((l) => {
+        const parts = l.returnDate.split("/");
+        return new Date(parts[2], parts[1] - 1, parts[0]).getTime() < today;
     }).length;
-    const monthly = new Array(12).fill(0);
-    db.loans.forEach(l => { const m = new Date(l.rentalDate).getMonth(); if(!isNaN(m)) monthly[m]++; });
-    res.json({ totalBooks: db.books.length, rentedBooks: rented, availableBooks: db.books.length - rented, lateLoans: late, monthlyData: monthly });
+    const monthlyData = new Array(12).fill(0);
+    db.loans.forEach((loan) => {
+        const d = new Date(loan.rentalDate);
+        if (!isNaN(d.getTime())) monthlyData[d.getMonth()]++;
+    });
+    res.json({ totalBooks, rentedBooks, availableBooks: totalBooks - rentedBooks, lateLoans, monthlyData });
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
