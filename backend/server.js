@@ -1,19 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path'); // Importante para caminhos de arquivo
 const app = express();
 
+// Liberação geral de CORS para aceitar seu novo domínio da Vercel
 app.use(cors());
 app.use(express.json());
 
-const DB_FILE = 'db.json';
+const DB_FILE = path.join(__dirname, 'db.json');
 
+// Inicializa o banco de dados se não existir
 if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify({ books: [], loans: [] }));
+    fs.writeFileSync(DB_FILE, JSON.stringify({ books: [], loans: [], nextBookId: 1 }));
 }
 
 const readDB = () => JSON.parse(fs.readFileSync(DB_FILE));
 const writeDB = (data) => fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+
+// Rota raiz para teste de status (ajuda o Render a saber que o site está vivo)
+app.get('/', (req, res) => res.send('Servidor Biblioteca NTE Online!'));
 
 // --- LIVROS ---
 app.get('/api/books', (req, res) => res.json(readDB().books));
@@ -21,9 +27,13 @@ app.get('/api/books', (req, res) => res.json(readDB().books));
 app.post('/api/books', (req, res) => {
     const db = readDB();
     
-    // Lógica de ID Automático (1, 2, 3...)
-    const maxId = db.books.reduce((max, book) => Math.max(max, parseInt(book.id) || 0), 0);
-    const newId = (maxId + 1).toString();
+    // Inicializa o contador se não existir
+    if (db.nextBookId === undefined) {
+        const maxId = db.books.reduce((max, book) => Math.max(max, parseInt(book.id) || 0), 0);
+        db.nextBookId = maxId + 1;
+    }
+
+    const newId = db.nextBookId.toString();
 
     const newBook = { 
         id: newId,
@@ -33,6 +43,8 @@ app.post('/api/books', (req, res) => {
     };
 
     db.books.push(newBook);
+    db.nextBookId++; 
+    
     writeDB(db);
     res.json(newBook);
 });
@@ -76,7 +88,7 @@ app.post('/api/loans', (req, res) => {
         const newLoan = {
             id: Date.now().toString(),
             studentName: req.body.studentName,
-            phone: req.body.phone, // Novo parâmetro: Telefone
+            phone: req.body.phone,
             school: req.body.school,
             grade: req.body.grade,
             bookId: book.id,
@@ -93,33 +105,6 @@ app.post('/api/loans', (req, res) => {
     } else {
         res.status(400).json({ error: 'Livro indisponível ou não encontrado.' });
     }
-});
-
-app.post('/api/books', (req, res) => {
-    const db = readDB();
-    
-    // Se por algum motivo o nextBookId não existir, inicializamos ele
-    if (db.nextBookId === undefined) {
-        const maxId = db.books.reduce((max, book) => Math.max(max, parseInt(book.id) || 0), 0);
-        db.nextBookId = maxId + 1;
-    }
-
-    // Usamos o valor atual do contador para o novo livro
-    const newId = db.nextBookId.toString();
-
-    const newBook = { 
-        id: newId,
-        title: req.body.title,
-        author: req.body.author,
-        status: 'Disponível' 
-    };
-
-    // Adiciona o livro e INCREMENTA o contador para a próxima vez
-    db.books.push(newBook);
-    db.nextBookId++; 
-    
-    writeDB(db);
-    res.json(newBook);
 });
 
 app.delete('/api/loans/:id', (req, res) => {
@@ -161,4 +146,6 @@ app.get('/api/dashboard', (req, res) => {
     res.json({ totalBooks, rentedBooks, availableBooks, lateLoans, monthlyData });
 });
 
-app.listen(3000, () => console.log('Servidor rodando com IDs automáticos e Telefone!'));
+// CONFIGURAÇÃO PARA O RENDER: Ele escolhe a porta automaticamente
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
